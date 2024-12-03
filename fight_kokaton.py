@@ -48,6 +48,7 @@ class Bird:
         (+5, +5): pg.transform.rotozoom(img, -45, 0.9),  # 右下
     }
 
+
     def __init__(self, xy: tuple[int, int]):
         """
         こうかとん画像Surfaceを生成する
@@ -141,6 +142,29 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+class Score:
+    """
+    スコア（撃ち落とした爆弾の数）に関するクラス
+    """
+    def __init__(self, sum:int):
+        """
+        スコア 初期化
+        """
+        self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        self.sum = 0
+        self.img = self.fonto.render(f"スコア：{self.sum}", 0, (0,0,255))
+        self.rct = self.img.get_rect()
+        self.rct.center = 100, HEIGHT-50
+    
+    def update(self, screen: pg.Surface):
+        """
+        現在のスコアを表示させる文字列Surfaceの生成
+        引数 screen：画面Surface
+        """
+        txt = self.fonto.render(f"スコア：{self.sum}", 0, (0,0,255))
+        screen.blit(txt, self.rct.center)
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
@@ -149,8 +173,10 @@ def main():
     bomb = Bomb((255, 0, 0), 10)
     beam = None # Beam(bird)  # Beamインスタンスを生成
     bombs = [Bomb((255, 0, 0), 10) for i in range(NUM_OF_BOMBS)]  # iはない変数のため_のことも多い
+    score = Score(0)
     clock = pg.time.Clock()
     tmr = 0
+    score_sum = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # ×ボタンが押されたら終わり
@@ -177,7 +203,8 @@ def main():
                     # ビームと爆弾どちらも消える
                     beam = None 
                     bombs[i] = None  # ぶつかったらそのボムのi番目をNoneにする
-                    bird.change_img(8, screen)  # こうかとん画像の切り替え（喜び）
+                    bird.change_img(6, screen)  # こうかとん画像の切り替え（喜び）
+                    score.sum += 1
                     pg.display.update()
 
         key_lst = pg.key.get_pressed()
@@ -186,6 +213,7 @@ def main():
         bombs = [bomb for bomb in bombs if bomb is not None]  # 要素がNoneでないものだけのリストへ更新（このあとupdateするから）
         for bomb in bombs:
             bomb.update(screen)
+            score.update(screen)
         if beam is not None:
             beam.update(screen)
         pg.display.update()
