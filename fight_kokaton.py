@@ -161,7 +161,7 @@ def main():
         if bomb is not None:
             if bird.rct.colliderect(bomb.rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-                bird.change_img(8, screen)
+                bird.change_img(8, screen)  # こうかとん画像の切り替え(泣き)
                 pg.display.update()
                 time.sleep(1)
                 return
@@ -169,8 +169,10 @@ def main():
         if beam is not None:
             if beam.rct.colliderect(bomb.rct):  # ビームとボムが接触したら？上参考
                 # ビームと爆弾どちらも消える
-                beam = None  #
+                beam = None 
                 bomb = None
+                bird.change_img(8, screen)  # こうかとん画像の切り替え（喜び）
+                pg.display.update()
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
