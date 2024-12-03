@@ -149,6 +149,7 @@ class Score:
     def __init__(self, sum:int):
         """
         スコア 初期化
+        引数 sum：現在のスコア合計
         """
         self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
         self.sum = 0
@@ -173,10 +174,9 @@ def main():
     bomb = Bomb((255, 0, 0), 10)
     beam = None # Beam(bird)  # Beamインスタンスを生成
     bombs = [Bomb((255, 0, 0), 10) for i in range(NUM_OF_BOMBS)]  # iはない変数のため_のことも多い
-    score = Score(0)
+    score = Score(0)  # Scoreインスタンスを生成
     clock = pg.time.Clock()
     tmr = 0
-    score_sum = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # ×ボタンが押されたら終わり
@@ -204,7 +204,7 @@ def main():
                     beam = None 
                     bombs[i] = None  # ぶつかったらそのボムのi番目をNoneにする
                     bird.change_img(6, screen)  # こうかとん画像の切り替え（喜び）
-                    score.sum += 1
+                    score.sum += 1  # スコア合計に１プラス
                     pg.display.update()
 
         key_lst = pg.key.get_pressed()
