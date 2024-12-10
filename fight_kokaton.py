@@ -108,8 +108,7 @@ class Beam:
         """
         if check_bound(self.rct) == (True, True):
             self.rct.move_ip(self.vx, self.vy)
-            screen.blit(self.img, self.rct)    
-
+            screen.blit(self.img, self.rct)
 
 class Bomb:
     """
@@ -173,17 +172,20 @@ def main():
     bomb = Bomb((255, 0, 0), 10)
     beam = None # Beam(bird)  # Beamインスタンスを生成
     bombs = [Bomb((255, 0, 0), 10) for i in range(NUM_OF_BOMBS)]  # iはない変数のため_のことも多い
+    beams = []  # 複数ビーム用空のリスト
     score = Score(0)
     clock = pg.time.Clock()
     tmr = 0
     score_sum = 0
+    
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # ×ボタンが押されたら終わり
                 return
-            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:  # 押されたのがキーボードかつスペースキーだったら
-                # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+            # 押されたのがキーボードかつスペースキーだったら
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:  
+                # スペースキー押下でBeamクラスのインスタンス生成 リストに追加
+                beams.append(Beam(bird))
         screen.blit(bg_img, [0, 0])
         
         for bomb in bombs:
@@ -198,10 +200,10 @@ def main():
                 return
             
         for i, bomb in enumerate(bombs):  # 番号付きのボムを生成
-            if beam is not None:
+            for i, beam in enumerate(beams):
                 if beam.rct.colliderect(bomb.rct):  # ビームとボムが接触したら？上参考
                     # ビームと爆弾どちらも消える
-                    beam = None 
+                    beams[i] = None 
                     bombs[i] = None  # ぶつかったらそのボムのi番目をNoneにする
                     bird.change_img(6, screen)  # こうかとん画像の切り替え（喜び）
                     score.sum += 1
@@ -210,11 +212,13 @@ def main():
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         # beam.update(screen)  
-        bombs = [bomb for bomb in bombs if bomb is not None]  # 要素がNoneでないものだけのリストへ更新（このあとupdateするから）
+        # 爆弾、ビーム：要素がNoneでないものだけのリストへ更新（このあとupdateするから）
+        bombs = [bomb for bomb in bombs if bomb is not None] 
         for bomb in bombs:
             bomb.update(screen)
             score.update(screen)
-        if beam is not None:
+        beams = [beam for beam in beams if beam is not None if check_bound(beam.rct) == (True, True)] 
+        for beam in beams:
             beam.update(screen)
         pg.display.update()
         tmr += 1
